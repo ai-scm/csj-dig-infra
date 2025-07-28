@@ -1,4 +1,9 @@
 version: 0.2
+env:
+  variables:
+    NAMESPACE: "CSJDigProdTesseractOCRStack"  # Nombre del stack de CDK
+  exported-variables:
+    - NAMESPACE
 
 phases:
   install:

@@ -1,42 +1,43 @@
-# -------------------------------------------------------------
-# Este archivo se usa en CodeBuild para:
-# 1. Instalar AWS CDK y dependencias de infraestructura.
-# 2. Validar la configuración de CDK (npx cdk doctor).
-# 3. Desplegar **únicamente el stack especificado en STACK_NAME**.
-# -------------------------------------------------------------
-
 version: 0.2
-
 env:
   variables:
-    # Cambia STACK_NAME al nombre del stack que se va a desplegar.
-    # Por ejemplo: "MyAppStack" o "FastApiStack".
-    STACK_NAME: "SampleStack"
+    NAMESPACE: "SampleStack"  # Nombre del stack de CDK
+  exported-variables:
+    - NAMESPACE
 
 phases:
   install:
     runtime-versions:
       nodejs: 22
     commands:
-      - echo "Installing AWS CDK and dependencies..."
+      - echo "Installing CDK dependencies..."
       - npm install -g aws-cdk@latest
-      - echo "Changing to CDK project directory..."
-      - cd aws
+      - echo "Directory contents:"
+      - ls -la
+      - echo "Changing to CDK directory..."
+      - echo "CDK directory contents:"
+      - ls -la
       - npm install
 
   pre_build:
     commands:
-      - echo "Validating CDK environment..."
+      - echo "Running CDK validation and tests..."
       - npx cdk doctor
-
   build:
     commands:
-      # Solo despliega el stack definido en STACK_NAME.
-      - echo "Deploying CDK Stack: $STACK_NAME..."
-      - npx cdk deploy $STACK_NAME --require-approval never --parameters IMAGETAG=$IMAGETAG
-      - echo "CDK deployment of $STACK_NAME completed!"
+      - echo "Waiting for stack $NAMESPACE to stabilize…"
+      - |
+        aws cloudformation wait stack-create-complete \
+          --stack-name "$NAMESPACE" || \
+        aws cloudformation wait stack-update-complete \
+          --stack-name "$NAMESPACE"
+      - echo "Stack $NAMESPACE is now stable."
+      - echo "Deploying CDK infrastructure..."
+      - npx cdk deploy $NAMESPACE --parameters IMAGETAG=${IMAGETAG} --require-approval never 
+      - echo "CDK deployment completed"
 
   post_build:
     commands:
-      - echo "Listing outputs for $STACK_NAME..."
+      - echo "CDK Build completed on `date`"
+      - echo "Deployment outputs:"
       - cat cdk-outputs.json || echo "No outputs file found"
