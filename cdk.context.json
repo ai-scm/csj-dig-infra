@@ -1,5 +1,143 @@
 {
   "acknowledged-issue-numbers": [
     34892
-  ]
+  ],
+  "vpc-provider:account=875376228721:filter.vpc-id=vpc-038fd15df9e4d5eef:region=us-east-1:returnAsymmetricSubnets=true": {
+    "vpcId": "vpc-038fd15df9e4d5eef",
+    "vpcCidrBlock": "10.205.0.0/21",
+    "ownerAccountId": "875376228721",
+    "availabilityZones": [],
+    "subnetGroups": [
+      {
+        "name": "private-app-",
+        "type": "Private",
+        "subnets": [
+          {
+            "subnetId": "subnet-02a6e0b16cfef3d5d",
+            "cidr": "10.205.2.0/24",
+            "availabilityZone": "us-east-1a",
+            "routeTableId": "rtb-02b975dec45bf8aba"
+          },
+          {
+            "subnetId": "subnet-00033c3c68f67fc77",
+            "cidr": "10.205.3.0/24",
+            "availabilityZone": "us-east-1b",
+            "routeTableId": "rtb-01059514ea9b46683"
+          }
+        ]
+      },
+      {
+        "name": "private-tgw-",
+        "type": "Isolated",
+        "subnets": [
+          {
+            "subnetId": "subnet-003256a8a8ff4c19a",
+            "cidr": "10.205.1.96/28",
+            "availabilityZone": "us-east-1a",
+            "routeTableId": "rtb-03b66223d4fd99f85"
+          },
+          {
+            "subnetId": "subnet-06fb1c4f64d9fc756",
+            "cidr": "10.205.1.112/28",
+            "availabilityZone": "us-east-1b",
+            "routeTableId": "rtb-0cdedc51111d13665"
+          }
+        ]
+      },
+      {
+        "name": "private-stg-",
+        "type": "Isolated",
+        "subnets": [
+          {
+            "subnetId": "subnet-0a484f49db02d3df6",
+            "cidr": "10.205.1.32/27",
+            "availabilityZone": "us-east-1a",
+            "routeTableId": "rtb-0f85c228564b52943"
+          },
+          {
+            "subnetId": "subnet-01b5cfec79aa4fada",
+            "cidr": "10.205.1.64/27",
+            "availabilityZone": "us-east-1b",
+            "routeTableId": "rtb-0458b9d3a84165211"
+          }
+        ]
+      },
+      {
+        "name": "public-web-",
+        "type": "Public",
+        "subnets": [
+          {
+            "subnetId": "subnet-00e82d484fb12cbba",
+            "cidr": "10.205.0.0/25",
+            "availabilityZone": "us-east-1a",
+            "routeTableId": "rtb-006f61a16b5fc258e"
+          },
+          {
+            "subnetId": "subnet-0fc209f80a76a265e",
+            "cidr": "10.205.0.128/25",
+            "availabilityZone": "us-east-1b",
+            "routeTableId": "rtb-087939260544f052a"
+          }
+        ]
+      },
+      {
+        "name": "Isolated",
+        "type": "Isolated",
+        "subnets": [
+          {
+            "subnetId": "subnet-092cf13c9497f089f",
+            "cidr": "10.205.6.0/24",
+            "availabilityZone": "us-east-1a",
+            "routeTableId": "rtb-0189ded3b2fb42c1f"
+          },
+          {
+            "subnetId": "subnet-02f6c54fe91f7ec31",
+            "cidr": "10.205.5.0/24",
+            "availabilityZone": "us-east-1b",
+            "routeTableId": "rtb-0189ded3b2fb42c1f"
+          }
+        ]
+      },
+      {
+        "name": "private-dat-",
+        "type": "Private",
+        "subnets": [
+          {
+            "subnetId": "subnet-093729dde61bd568d",
+            "cidr": "10.205.4.0/25",
+            "availabilityZone": "us-east-1a",
+            "routeTableId": "rtb-0755c35c19085693c"
+          },
+          {
+            "subnetId": "subnet-0ba509d3914f824a7",
+            "cidr": "10.205.4.128/25",
+            "availabilityZone": "us-east-1b",
+            "routeTableId": "rtb-05913fd9407f1da6b"
+          }
+        ]
+      },
+      {
+        "name": "private-fwl-",
+        "type": "Isolated",
+        "subnets": [
+          {
+            "subnetId": "subnet-0128b7ad85b03688f",
+            "cidr": "10.205.1.0/28",
+            "availabilityZone": "us-east-1a",
+            "routeTableId": "rtb-06240fd5744f87f77"
+          },
+          {
+            "subnetId": "subnet-0fe680bb36005dc58",
+            "cidr": "10.205.1.16/28",
+            "availabilityZone": "us-east-1b",
+            "routeTableId": "rtb-09e2c74dd917d77ab"
+          }
+        ]
+      }
+    ]
+  },
+  "hosted-zone:account=875376228721:domainName=ia.ramajudicial.consultadocumental.nuvu.cc:region=us-east-1": {
+    "Id": "/hostedzone/Z03738772LXJ0LFU9OW61",
+    "Name": "ia.ramajudicial.consultadocumental.nuvu.cc."
+  }
 }

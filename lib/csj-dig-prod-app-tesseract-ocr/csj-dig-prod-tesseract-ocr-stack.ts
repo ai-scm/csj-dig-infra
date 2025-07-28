@@ -14,7 +14,7 @@ export class CSJDigProdTesseractOCRStack extends cdk.Stack {
     const AppRepoSourceConfig: AppSourceConfig = {
       owner: 'ai-scm',
       branch: 'main',
-      connectionArn: 'arn:aws:',
+      connectionArn: 'arn:aws:codeconnections:us-east-1:875376228721:connection/47ece147-e3a3-4d86-9e2a-893bdf42eeee',
       repo: 'csj-dig-prod-app-tesseract-ocr',
       triggerOnPush: true,
     };
@@ -22,7 +22,7 @@ export class CSJDigProdTesseractOCRStack extends cdk.Stack {
     const infraRepoSourceConfig: InfraSourceConfig = {
       owner: 'ai-scm',
       branch: 'main',
-      connectionArn: 'arn:aws:',
+      connectionArn: 'arn:aws:codeconnections:us-east-1:875376228721:connection/47ece147-e3a3-4d86-9e2a-893bdf42eeee',
       repo: 'csj-dig-prod-infra',
       triggerOnPush: true,
     };
@@ -62,8 +62,8 @@ export class CSJDigProdTesseractOCRStack extends cdk.Stack {
 
     const pipelineConstruct = new PipelineConstruct(this, 'CSJDigProdTesseractOCRAppPipeline', pipelineProps);
 
-    const appName = 'csj-dig-prod-tesseract-ocr';
-    const domainName = 'ia.blend360.com';
+    const appName = 'csj-prod-tesseract';
+    const domainName = 'ia.ramajudicial.consultadocumental.nuvu.cc';
     const fullDomainName = `${appName}.${domainName}`;  // Ejemplo de dominio completo
 
     const vpc = Vpc.fromLookup(this, 'ExistingVPC', {
@@ -113,7 +113,7 @@ export class CSJDigProdTesseractOCRStack extends cdk.Stack {
         targetType: elbv2.TargetType.IP,
         port: 8000,  // Puerto del target group
         protocol: elbv2.ApplicationProtocol.HTTP, // Protocolo del target group
-        targetGroupName: `${appName}-target-group`,
+        targetGroupName: `${appName}-tg`,
         deregistrationDelay: cdk.Duration.seconds(30)
       },
       listenerProps: {

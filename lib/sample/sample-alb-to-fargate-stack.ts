@@ -14,7 +14,7 @@ export class CSJDigSampleAlbToFargateStack extends cdk.Stack {
     const AppRepoSourceConfig: AppSourceConfig = {
       owner: 'ai-scm',
       branch: 'main',
-      connectionArn: 'arn:aws:',
+      connectionArn: 'arn:aws:codeconnections:us-east-1:875376228721:connection/47ece147-e3a3-4d86-9e2a-893bdf42eeee',
       repo: 'csj-dig-prod-app-sample',
       triggerOnPush: true,
     };
@@ -22,7 +22,7 @@ export class CSJDigSampleAlbToFargateStack extends cdk.Stack {
     const infraRepoSourceConfig: InfraSourceConfig = {
       owner: 'ai-scm',
       branch: 'main',
-      connectionArn: 'arn:aws:',
+      connectionArn: 'arn:aws:codeconnections:us-east-1:875376228721:connection/47ece147-e3a3-4d86-9e2a-893bdf42eeee',
       repo: 'csj-dig-prod-infra',
       triggerOnPush: true,
     };

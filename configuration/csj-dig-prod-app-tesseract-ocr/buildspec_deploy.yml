@@ -33,7 +33,7 @@ phases:
     commands:
       # Solo despliega el stack definido en STACK_NAME.
       - echo "Deploying CDK Stack: $STACK_NAME..."
-      - npx cdk deploy $STACK_NAME --require-approval never
+      - npx cdk deploy $STACK_NAME --require-approval never --parameters IMAGETAG=$IMAGETAG
       - echo "CDK deployment of $STACK_NAME completed!"
 
   post_build:
