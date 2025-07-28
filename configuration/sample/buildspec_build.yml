@@ -1,0 +1,56 @@
+# -------------------------------------------------------------
+# Este archivo se usa en CodeBuild para:
+# 1. Construir la imagen Docker de la aplicación.
+# 2. Etiquetar la imagen con una versión (IMAGETAG).
+# 3. Subir la imagen al repositorio ECR.
+# -------------------------------------------------------------
+
+version: 0.2
+
+env:
+  variables:
+    # Tag por defecto de la imagen. Se puede sobreescribir con version.txt.
+    IMAGETAG: "latest"
+
+  exported-variables:
+    # Exportamos IMAGETAG para que otras fases/pipelines puedan leerla.
+    - IMAGETAG
+
+phases:
+  install:
+    commands:
+      # Aquí puedes instalar dependencias adicionales si tu build lo necesita.
+      - echo "Installing dependencies (if needed)..."
+
+  pre_build:
+    commands:
+      # Si existe version.txt, lo usamos como IMAGETAG.
+      - echo "Reading image version from version.txt..."
+      - IMAGETAG=$(cat version.txt) || IMAGETAG="latest"
+
+      # Autenticamos Docker contra ECR.
+      - echo "Logging in to Amazon ECR..."
+      - aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com
+
+      - echo "Using image tag: $IMAGETAG"
+
+  build:
+    commands:
+      # Construcción de la imagen Docker (usa el Dockerfile en el root).
+      - echo "Building Docker image..."
+      - docker build -t $IMAGE_REPO_NAME:$IMAGETAG .
+
+      # Etiquetamos la imagen para subirla al repositorio ECR.
+      - echo "Tagging Docker image for ECR..."
+      - docker tag $IMAGE_REPO_NAME:$IMAGETAG $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:$IMAGETAG
+
+      # Tag alternativo usando el número de build de CodeBuild (opcional).
+      - docker tag $IMAGE_REPO_NAME:$IMAGETAG $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:$CODEBUILD_BUILD_NUMBER
+
+  post_build:
+    commands:
+      # Subimos ambas etiquetas a ECR.
+      - echo "Pushing Docker image to ECR..."
+      - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:$IMAGETAG
+      - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:$CODEBUILD_BUILD_NUMBER
+      - echo "Docker image pushed successfully!"

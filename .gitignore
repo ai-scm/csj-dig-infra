@@ -1,8 +1,15 @@
-*.js
-!jest.config.js
-*.d.ts
-node_modules
+# Dependencias
+node_modules/
 
-# CDK asset staging directory
-.cdk.staging
-cdk.out
+# Salida de CDK
+cdk.out/
+
+# Logs
+*.log
+
+# Archivos del sistema
+.DS_Store
+Thumbs.db
+
+# Variables de entorno
+.env
