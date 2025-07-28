@@ -18,7 +18,7 @@ export class CSJDigSampleStack extends cdk.Stack {
       owner: 'ai-scm',
       branch: 'main',
       connectionArn: 'arn:aws:',
-      repo: 'csj-dig-prod-infra-sample',
+      repo: 'csj-dig-prod-infra',
       triggerOnPush: true,
     }
 
