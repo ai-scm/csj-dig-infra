@@ -7,7 +7,7 @@ import { Construct } from 'constructs';
 import * as ecs from 'aws-cdk-lib/aws-ecs';
 import * as elbv2 from 'aws-cdk-lib/aws-elasticloadbalancingv2';
 
-export class CSJDigSampleAlbToFargateStack extends cdk.Stack {
+export class CSJDigProdTesseractOCRStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
@@ -15,7 +15,7 @@ export class CSJDigSampleAlbToFargateStack extends cdk.Stack {
       owner: 'ai-scm',
       branch: 'main',
       connectionArn: 'arn:aws:',
-      repo: 'csj-dig-prod-app-sample',
+      repo: 'csj-dig-prod-app-tesseract-ocr',
       triggerOnPush: true,
     };
 
@@ -35,39 +35,39 @@ export class CSJDigSampleAlbToFargateStack extends cdk.Stack {
       default: 'latest',  // Valor por defecto
     }).valueAsString;
 
-    const pathBuildSpecBuild = './configuration/sample/buildspec_build.yml';
-    const pathBuildSpecDeploy = './configuration/sample/buildspec_deploy.yml';
+    const pathBuildSpecBuild = './configuration/csj-dig-prod-app-tesseract-ocr/buildspec_build.yml';
+    const pathBuildSpecDeploy = './configuration/csj-dig-prod-app-tesseract-ocr/buildspec_deploy.yml';
     
     const pipelineProps: PipelineConstructProps = {
-      namespace: 'CSJDigSampleApp',
+      namespace: 'CSJDigProdTesseractOCRApp',
       pipelineType: 'fargate',
-      ecrRepositoryName: 'csj-dig-prod-sample-repo',
+      ecrRepositoryName: 'csj-dig-prod-tesseract-ocr-repo',
       appSourceConfig: AppRepoSourceConfig,
       infraSourceConfig: infraRepoSourceConfig,
       buildConfig: {
         privileged: true,   // Requerido para Docker builds
         environmentVariables: {
-          IMAGE_REPO_NAME: { value: 'csj-dig-prod-repo-en-ecr' },   // Nombre del repositorio ECR
-          OTHER_ENV_VARIABLE: { value: 'value' }
+          IMAGE_REPO_NAME: { value: 'csj-dig-prod-tesseract-ocr-repo' },   // Nombre del repositorio ECR
+          // OTHER_ENV_VARIABLE: { value: 'value' }
         },
         buildSpec: cdk.aws_codebuild.BuildSpec.fromAsset(pathBuildSpecBuild),
       },
       deployConfig: {
         buildSpec: cdk.aws_codebuild.BuildSpec.fromAsset(pathBuildSpecDeploy),
         environmentVariables: {
-          ENV_VARIABLE: { value: 'value' }
+          // ENV_VARIABLE: { value: 'value' }
         }
       }
     };
 
-    const pipelineConstruct = new PipelineConstruct(this, 'CSJDigSampleAppPipeline', pipelineProps);
+    const pipelineConstruct = new PipelineConstruct(this, 'CSJDigProdTesseractOCRAppPipeline', pipelineProps);
 
-    const appName = 'csj-dig-prod-sample';
-    const domainName = 'test.ia.blend360.com';
+    const appName = 'csj-dig-prod-tesseract-ocr';
+    const domainName = 'ia.blend360.com';
     const fullDomainName = `${appName}.${domainName}`;  // Ejemplo de dominio completo
 
     const vpc = Vpc.fromLookup(this, 'ExistingVPC', {
-      vpcId: 'vpc-id'  // Reemplazar con el ID de la VPC existente
+      vpcId: 'vpc-038fd15df9e4d5eef'  // Reemplazar con el ID de la VPC existente
     });
 
     const repository = pipelineConstruct.ecrRepo;
@@ -76,7 +76,8 @@ export class CSJDigSampleAlbToFargateStack extends cdk.Stack {
       assumedBy: new ServicePrincipal('ecs-tasks.amazonaws.com'),
     });
 
-    const existingPrivateSubnet = Subnet.fromSubnetId(this, 'ExistingPrivateSubnet', 'subnet-id'); // Reemplazar con el ID de la subred privada existente
+    const subnet1 = Subnet.fromSubnetId(this, 'csj-prod-subnet-app-1', 'subnet-02a6e0b16cfef3d5d');
+    const subnet2 = Subnet.fromSubnetId(this, 'csj-prod-subnet-app-2', 'subnet-00033c3c68f67fc77');
 
     const albToFargateProps: AlbToFargateProps = {
       publicApi: true,    // Configura como API pública
@@ -86,8 +87,8 @@ export class CSJDigSampleAlbToFargateStack extends cdk.Stack {
       containerDefinitionProps: {
         containerName: `${appName}-container`,
         image: ecs.ContainerImage.fromEcrRepository(repository!, IMAGETAG),
-        memoryLimitMiB: 512,  // Memoria asignada al contenedor
-        cpu: 256,  // CPU asignada al contenedor
+        memoryLimitMiB: 1024,  // Memoria asignada al contenedor
+        cpu: 512,  // CPU asignada al contenedor
         portMappings: [{
           containerPort: 8000,  // Puerto del contenedor
           protocol: ecs.Protocol.TCP,  // Protocolo del puerto
@@ -96,7 +97,7 @@ export class CSJDigSampleAlbToFargateStack extends cdk.Stack {
           streamPrefix: `${appName}-logs`,
         }),
         environment: {
-          ENV_VARIABLE: 'value',  // Variables de entorno del contenedor
+          // ENV_VARIABLE: 'value',  // Variables de entorno del contenedor
         }
       },
       targetGroupProps: {
@@ -155,7 +156,7 @@ export class CSJDigSampleAlbToFargateStack extends cdk.Stack {
           maxCapacity: 5,  // Capacidad máxima de tareas
         },
         vpcSubnets: {
-          scope: [ existingPrivateSubnet ],  // Subredes donde se desplegarán las tareas
+          scope: [ subnet1, subnet2 ],  // Subredes donde se desplegarán las tareas
         }
       },
       ruleProps: {
@@ -170,8 +171,8 @@ export class CSJDigSampleAlbToFargateStack extends cdk.Stack {
       },
       fargateTaskDefinitionProps: {
         taskRole: taskRole,
-        cpu: 256,  // CPU asignada a la tarea
-        memoryLimitMiB: 512,  // Memoria asignada a la tarea
+        cpu: 512,  // CPU asignada a la tarea
+        memoryLimitMiB: 1024,  // Memoria asignada a la tarea
         family: `${appName}-ECSTaskDefinition`,
         volumes: [],  // Volúmenes de la tarea
         ephemeralStorageGiB: 25,  // Almacenamiento efímero asignado a la tarea
