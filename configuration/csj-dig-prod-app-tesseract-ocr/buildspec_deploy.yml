@@ -11,7 +11,7 @@ env:
   variables:
     # Cambia STACK_NAME al nombre del stack que se va a desplegar.
     # Por ejemplo: "MyAppStack" o "FastApiStack".
-    STACK_NAME: "SampleStack"
+    STACK_NAME: "CSJDigProdTesseractOCRStack"
 
 phases:
   install:
