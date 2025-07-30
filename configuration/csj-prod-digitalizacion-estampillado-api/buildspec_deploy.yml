@@ -1,0 +1,42 @@
+# -------------------------------------------------------------
+# Este archivo se usa en CodeBuild para:
+# 1. Instalar AWS CDK y dependencias de infraestructura.
+# 2. Validar la configuración de CDK (npx cdk doctor).
+# 3. Desplegar **únicamente el stack especificado en STACK_NAME**.
+# -------------------------------------------------------------
+
+version: 0.2
+
+env:
+  variables:
+    # Cambia STACK_NAME al nombre del stack que se va a desplegar.
+    # Por ejemplo: "MyAppStack" o "FastApiStack".
+    STACK_NAME: "CSJProdDigitalizacionEstampilladoApiStack"
+
+phases:
+  install:
+    runtime-versions:
+      nodejs: 22
+    commands:
+      - echo "Installing AWS CDK and dependencies..."
+      - npm install -g aws-cdk@latest
+      - echo "Changing to CDK project directory..."
+      - cd aws
+      - npm install
+
+  pre_build:
+    commands:
+      - echo "Validating CDK environment..."
+      - npx cdk doctor
+
+  build:
+    commands:
+      # Solo despliega el stack definido en STACK_NAME.
+      - echo "Deploying CDK Stack: $STACK_NAME..."
+      - npx cdk deploy $STACK_NAME --parameters IMAGETAG=$IMAGETAG --require-approval never
+      - echo "CDK deployment of $STACK_NAME completed!"
+
+  post_build:
+    commands:
+      - echo "Listing outputs for $STACK_NAME..."
+      - cat cdk-outputs.json || echo "No outputs file found"
